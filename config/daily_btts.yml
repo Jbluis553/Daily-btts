@@ -1,0 +1,76 @@
+# .github/workflows/daily_btts.yml
+name: Daily BTTS Analysis
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # 06:00 UTC diario
+  workflow_dispatch:
+    inputs:
+      date_from:
+        description: "Fecha inicio (YYYY-MM-DD)"
+        required: false
+        default: ""
+      date_to:
+        description: "Fecha fin (YYYY-MM-DD)"
+        required: false
+        default: ""
+      min_pct:
+        description: "Umbral mínimo ensemble"
+        required: false
+        default: "80"
+      top_n:
+        description: "Máximo de resultados"
+        required: false
+        default: "20"
+      min_edge:
+        description: "Edge mínimo (0 = modo umbral clásico)"
+        required: false
+        default: "0"
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Liquidar predicciones de días anteriores
+        env:
+          THESTATSAPI_KEY: ${{ secrets.THESTATSAPI_KEY }}
+          MAX_RPM: "1000"
+        run: python main.py --settle
+
+      - name: Ejecutar análisis BTTS
+        env:
+          THESTATSAPI_KEY: ${{ secrets.THESTATSAPI_KEY }}
+          MAX_RPM: "1000"
+          HISTORY_WORKERS: "20"
+          MIN_EDGE: ${{ github.event.inputs.min_edge || '0' }}
+        run: |
+          python main.py \
+            --date-from "${{ github.event.inputs.date_from || '' }}" \
+            --date-to "${{ github.event.inputs.date_to || '' }}" \
+            --min-pct "${{ github.event.inputs.min_pct || '80' }}" \
+            --top-n "${{ github.event.inputs.top_n || '20' }}"
+
+      - name: Subir CSV del día
+        uses: actions/upload-artifact@v4
+        with:
+          name: btts-results
+          path: btts_*.csv
+          retention-days: 14
+
+      - name: Subir log de predicciones (ROI tracker)
+        uses: actions/upload-artifact@v4
+        with:
+          name: predictions-log
+          path: predictions_log.jsonl
+          retention-days: 90
+          if-no-files-found: ignore
