@@ -28,7 +28,7 @@ class Settings:
     min_edge: float = 0.0
     bankroll: float = 100.0
     api_key: str = ""
-    api_base_url: str = "https://api.thestatsapi.com"
+    api_base_url: str = "https://api.thestatsapi.com/api"
 
     @classmethod
     def from_dict(cls, values: Optional[Dict[str, Any]] = None) -> "Settings":
@@ -80,7 +80,7 @@ class Settings:
         api_base_url = str(
             payload.get(
                 "api_base_url",
-                os.environ.get("THESTATS_BASE_URL", "https://api.thestatsapi.com"),
+                os.environ.get("THESTATS_BASE_URL", "https://api.thestatsapi.com/api"),
             )
         )
 
