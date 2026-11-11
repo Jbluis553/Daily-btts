@@ -15,7 +15,7 @@ from typing import Any, Dict, List
 
 import numpy as np
 
-from ..utils import extract_score
+from src.utils import extract_score
 from .base import BaseBTTSModel
 from .training import SEQ_LEN, load_trained
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from typing import Any, Dict, List, Tuple
 
-from ..utils import extract_score
+from src.utils import extract_score
 from .base import BaseBTTSModel
 
 

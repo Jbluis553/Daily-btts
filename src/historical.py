@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from ..utils import is_btts, safe_div
+from src.utils import is_btts, safe_div
 from .base import BaseBTTSModel
 
 

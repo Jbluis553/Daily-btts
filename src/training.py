@@ -18,7 +18,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
-from ..utils import extract_score, is_btts
+from src.utils import extract_score, is_btts
 
 logger = logging.getLogger(__name__)
 
